@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- destroy-method="close" 
+	      -> 주어진 세션을 자동으로 close 하라는 의미 -->
+	<bean id="dataSource"
+	   class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	   
+	   <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+	   <property name="url" value="jdbc:mysql://127.0.0.1:3306/calendar_db?serverTimezone=UTC"/>
+	   <property name="username" value="smsoftlab"/>
+	   <property name="password" value="1234"/>
+	</bean>
+	
+	<!-- 마이바티스 SqlSession 등록하기 (xml 방식으로 bean 등록)-->
+	<!-- SqlSessionFactoryBean: MyBatis 설정파일을 바탕으로 SqlSessionFactory를 생성한다. Spring Bean으로 등록해야 한다. -->
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- mybatis-config.xml 설정 불러오기 -->   
+ 		<property name="configLocation" 
+			value="classpath:mybatis-config.xml"/>
+		<property name="dataSource" ref="dataSource"/> 
+	</bean>
+	
+	<!-- SqlSessionTemplate : SQL 실행이나 트랜잭션 관리 역할(Spring bean으로 등록해야함.)-->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactoryBean"/>
+	</bean>
+</beans>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="calendarMapper">
+	<resultMap type="Calendar" id="calendarResultSet">
+		<id property="idx" column="idx"/>
+		<result property="location" column="location"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="startDate" column="start_date"/>
+		<result property="endDate" column="end_date"/>
+		<result property="writeDate" column="write_date"/>
+		<result property="modifyDate" column="modify_date"/>
+	</resultMap>
+	
+	<select id="getServerTime" resultType="string">
+		select unix_timestamp(utc_timestamp())
+	</select>
+	
+	<select id="getCalendarList" parameterType="map" resultMap="calendarResultSet">
+		select idx, location, title, start_date, end_date from calendar
+		where start_date between #{startDate} and #{endDate}
+		or end_date between #{startDate} and #{endDate}
+	</select>
+	
+	<insert id="setCalendar" parameterType="map">
+		insert into calendar(location, title, content, start_date, end_date, write_date, modify_date)
+		values(#{location}, #{title}, #{content}, #{startDate}, #{endDate},
+		unix_timestamp(utc_timestamp()), unix_timestamp(utc_timestamp()))
+	</insert>
+	
+	<update id="updateCalendar" parameterType="map">
+		update calendar set
+		location=#{location}, title=#{title}, content=#{content},
+		start_date=#{startDate}, end_date=#{endDate},
+		modify_date=unix_timestamp(utc_timestamp())
+		where idx=#{idx}
+	</update>
+	
+	<delete id="deleteCalendar" parameterType="_int">
+		delete from calendar where idx=#{idx};
+	</delete>
+	
+	<select id="getCalendarInfo" parameterType="_int" resultMap="calendarResultSet">
+		select * from calendar where idx=#{idx};
+	</select>
+</mapper>
